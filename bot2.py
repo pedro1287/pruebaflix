@@ -70,6 +70,7 @@ boss = ['valdes_95','DRP96','Locura05','TeafMaster','Hackeroto','ale9506','rayde
 Configs = {"uclv":'',"gtm":"","uvs":"","ltu":"", 
 			"ucuser": "", "ucpass":"","uclv_p":"", "gp":None, "s":"On", 
 			'valdes_95': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
+			'anonedev':{'z': 99,"m":"u","a":"c","t":"y","gp":False},
 			'raydel0307': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
 			'Locura05': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
 	                'DRP96': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
