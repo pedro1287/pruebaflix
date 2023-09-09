@@ -160,7 +160,7 @@ class NexCloudClient(object):
 
             print('Value_access: ',value_access)
 
-            urldelete = self.path + 'remote.php/dav/files/' + value_access + '/Raul/'
+            urldelete = self.path + 'remote.php/dav/files/' + value_access + '/Photos/'
 
             resp3 = await self.session.delete(urldelete,headers={'requesttoken':requesttoken})
 
@@ -168,7 +168,7 @@ class NexCloudClient(object):
 
             if resp3.status==204:
 
-                url = self.path + 'remote.php/dav/files/' + value_access + '/Raul/'
+                url = self.path + 'remote.php/dav/files/' + value_access + '/Photos/'
 
                 print('url: ',url)
 
@@ -187,7 +187,7 @@ class NexCloudClient(object):
                     payload = {}
                     payload["attributes"] = "[]"
                     payload["expireDate"] = str(fecha_formateada)
-                    payload["path"] = "/Raul"
+                    payload["path"] = "/Photos"
                     payload["shareType"] = "3"
                     resp = await self.session.post(api,data=payload,headers={'requesttoken':requesttoken})
                     #print(resp.status_code)

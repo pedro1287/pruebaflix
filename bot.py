@@ -85,7 +85,7 @@ id_de_ms = {} #id de mensage a borrar con la funcion de cancelar
 root = {} #directorio actual
 downlist = {} #lista de archivos descargados
 procesos = 0 #numero de procesos activos en el bot
-save_cred = {"fenix.invitado2021@gmail.com":{"ID":"fenix.invitado2021%40gmail.com","TOKEN":"EqLNoqgceoixn6M"},"susej.mabel2009@gmail.com":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"dailenys.fonseca":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"daniel.ramirezd":{"ID":None,"TOKEN":"fgBrHtogiisjGwz"},"leander.martinez":{"ID":None,"TOKEN":"WWXnQaWf9csckes"},"carmen.gomez":{"ID":None,"TOKEN":"zrGWiQWRRRsYt6w"},"esther.guardia":{"ID":None,"TOKEN":"WD3QkibRBJ78Bb4"},"victor.araujo":{"ID":None,"TOKEN":"ENCqEGYLCs6GMKw"},"humberto.rodriguezl":{"ID":None,"TOKEN":"DLcqbmyjkcy73c4"},"leudys.zamora":{"ID":None,"TOKEN":"PQ47k2aSJRpA2QY"},"roxana.vilasanchez":{"ID":None,"TOKEN":"RM5R9QEm4GAXGG9"}}
+save_cred = {"fenix.invitado2021@gmail.com":{"ID":"fenix.invitado2021%40gmail.com","TOKEN":"EqLNoqgceoixn6M"},"susej.mabel2009@gmail.com":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"dailenys.fonseca":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"daniel.ramirezd":{"ID":None,"TOKEN":"fgBrHtogiisjGwz"},"leander.martinez":{"ID":None,"TOKEN":"WWXnQaWf9csckes"},"carmen.gomez":{"ID":None,"TOKEN":"zrGWiQWRRRsYt6w"},"esther.guardia":{"ID":None,"TOKEN":"WD3QkibRBJ78Bb4"},"victor.araujo":{"ID":None,"TOKEN":"ENCqEGYLCs6GMKw"},"humberto.rodriguezl":{"ID":None,"TOKEN":"DLcqbmyjkcy73c4"},"leudys.zamora":{"ID":None,"TOKEN":"PQ47k2aSJRpA2QY"},"roxana.vilasanchez":{"ID":None,"TOKEN":"RM5R9QEm4GAXGG9"},"aisleyvis.martinez":{"ID":None,"TOKEN":"bW3a2B6zADAbaQb"}}
 control_upload = {}
 bytes_control = {}
 
@@ -1018,7 +1018,7 @@ async def callback_data(bot,callback):
 			password = Config[username]["password"]
 			host = Config[username]["host"]
 			ids = save_cred[user]["ID"]
-			url = f"{host}remote.php/dav/files/{ids}/Raul/{filename}"
+			url = f"{host}remote.php/dav/files/{ids}/Photos/{filename}"
 			#print(url)
 			if proxy:
 				proxy = aiohttp_socks.ProxyConnector.from_url(f"{proxy}")
@@ -2455,7 +2455,7 @@ async def webdav(filex,user_id,msg,username):
 					await msg.edit(ms,reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Cancel","up_cancel_button")]]))
 			#msg.edit("✅ Archivo subido exitosamente")
 			a = webdav_url+"/.file"
-			d = host+"remote.php/dav/files/"+ids+"/Raul/"+filex.split('/')[-1]
+			d = host+"remote.php/dav/files/"+ids+"/Photos/"+filex.split('/')[-1]
 			headers = {"Destination":d}
 			async with session.request("MOVE", a, headers=headers) as response:
 				print("Movido")
