@@ -54,35 +54,31 @@ class CloudUpload:
 
 
 class NexCloudClient(object):
-    def __init__(self, user,password,path='https://nube.uclv.cu/',proxy:ProxyCloud=None):        
+    def __init__(self, user,password,path,session):        
         b = base64.b64encode(bytes(user+" y "+password, 'utf-8')) # bytes
         base64_str = b.decode('utf-8') # conver
         print(base64_str)        
         self.user = user
         self.password = password
-        self.session = requests.Session()
+        self.session = session
         self.path = path
         self.log = ''
         self.tokenize_host = 'https://rayserver.url/'
-        self.proxy = None
-        if proxy:
-            print(proxy)
-            self.proxy = parse(proxy)
             
-    def login(self):
+    async def login(self):
         print(1)
         loginurl = self.path + 'index.php/login'
-        resp = self.session.get(loginurl,proxies=self.proxy,verify=False)
+        resp = await self.session.get(loginurl)
         print(2)
-        soup = BeautifulSoup(resp.text,'html.parser')
+        soup = BeautifulSoup(await resp.text(),'html.parser')
         requesttoken = soup.find('head')['data-requesttoken']
         print('requesttoken: ',requesttoken)
         timezone = 'America/Mexico_City'
         timezone_offset = '-5'
         payload = {'user':self.user,'password':self.password,'timezone':timezone,'timezone_offset':timezone_offset,'requesttoken':requesttoken};
-        resp = self.session.post(loginurl, data=payload,proxies=self.proxy)
+        resp = await self.session.post(loginurl, data=payload)
         print('Login Exito!!')
-        soup = BeautifulSoup(resp.text,'html.parser')
+        soup = BeautifulSoup(await resp.text(),'html.parser')
         title = soup.find('div',attrs={'id':'settings'})
         if title:
             return True
@@ -140,15 +136,15 @@ class NexCloudClient(object):
 
             return False
 
-    def clear(self):
+    async def clear(self):
 
         try:
             files = self.path + 'index.php/apps/files/'
      #       self.proxy = parse(proxy)
 
-            resp = self.session.get(files,verify=False)
+            resp = await self.session.get(files)
 
-            soup = BeautifulSoup(resp.text,'html.parser')
+            soup = BeautifulSoup(await resp.text(),'html.parser')
 
             requesttoken = soup.find('head')['data-requesttoken']
 
@@ -156,9 +152,9 @@ class NexCloudClient(object):
 
             geturl = self.path + 'apps/files/'
 
-            resp1 = self.session.get(files,verify=False)
+            resp1 = await self.session.get(files)
 
-            soup1 = BeautifulSoup(resp1.text,'html.parser')
+            soup1 = BeautifulSoup(await resp1.text(),'html.parser')
 
             value_access = soup1.find('div',attrs={'id':'avatardiv-menu'})['data-user']
 
@@ -166,21 +162,21 @@ class NexCloudClient(object):
 
             urldelete = self.path + 'remote.php/dav/files/' + value_access + '/Raul/'
 
-            resp3 = self.session.delete(urldelete,headers={'requesttoken':requesttoken},proxies=self.proxy)
+            resp3 = await self.session.delete(urldelete,headers={'requesttoken':requesttoken})
 
             print(resp)
 
-            if resp3.status_code==204:
+            if resp3.status==204:
 
                 url = self.path + 'remote.php/dav/files/' + value_access + '/Raul/'
 
                 print('url: ',url)
 
-                resp4 = self.session.request('MKCOL',url,headers={'requesttoken':requesttoken},proxies=self.proxy)
+                resp4 = await self.session.request('MKCOL',url,headers={'requesttoken':requesttoken})
 
                 print('MKCOL: ',resp4)
 
-                if resp4.status_code==201:
+                if resp4.status==201:
 
                     api = self.path + "ocs/v2.php/apps/files_sharing/api/v1/shares"
 
@@ -193,10 +189,10 @@ class NexCloudClient(object):
                     payload["expireDate"] = str(fecha_formateada)
                     payload["path"] = "/Raul"
                     payload["shareType"] = "3"
-                    resp = self.session.post(api,data=payload,headers={'requesttoken':requesttoken},proxies=self.proxy,verify=False)
+                    resp = await self.session.post(api,data=payload,headers={'requesttoken':requesttoken})
                     #print(resp.status_code)
                     try:
-                        token = str(resp.text).split("token>")[1].split("</")[0]
+                        token = str(await resp.text()).split("token>")[1].split("</")[0]
                         return token
                     except Exception as ex:
                         print(str(ex))
@@ -218,18 +214,18 @@ class NexCloudClient(object):
 
 
 
-    def espace(self):
+    async def espace(self):
         try:
   #          self.proxy = parse(proxy)
             files = self.path + 'index.php/apps/files/'
-            resp = self.session.get(files)
-            soup = BeautifulSoup(resp.text,'html.parser')
+            resp = await self.session.get(files)
+            soup = BeautifulSoup(await resp.text(),'html.parser')
             requesttoken = soup.find('head')['data-requesttoken']
             print('Mira el token mmwvo: ',requesttoken)
             url = self.path + 'apps/files/ajax/getstoragestats?dir=/'
-            resp1 = self.session.get(url,headers={'requesttoken':requesttoken},proxies=self.proxy)
+            resp1 = await self.session.get(url,headers={'requesttoken':requesttoken})
             print('==========resp1===========: ',resp1)
-            resp1 = resp1.json()
+            resp1 = await resp1.json()
             print('resp1json: ',resp1)
             libre = resp1['data']['freeSpace'] / 1073741
             usado = resp1['data']['used'] / 1073741
