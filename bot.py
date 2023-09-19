@@ -55,6 +55,7 @@ from moodle import delete
 from decorators import async_decorator
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
+from pymongo import MongoClient
 import uuid
 import random
 
@@ -402,6 +403,51 @@ async def zips(client: Client, message: Message):
 	Configs[username]["z"] = sip
 	await send_config()
 	await send("✅ 𝑫𝒐𝒏𝒆")
+
+@bot.on_message(filters.command("getall", prefixes="/")& filters.private)
+async def info(client: Client, message: Message):
+	username = message.from_user.username
+	send = message.reply
+	index = message.text.split(" ")[1]
+	try:await get_messages()
+	except:await send_config()
+	if comprobacion_de_user(username) == False:
+		await send("⛔ 𝑵𝒐 𝒕𝒊𝒆𝒏𝒆 𝒂𝒄𝒄𝒆𝒔𝒐")
+		return
+	else:pass
+	CLIENT_MONGO = MongoClient("mongodb+srv://hiyabo:informatur26@database.7mailjq.mongodb.net/?retryWrites=true&w=majority", serverSelectionTimeoutMS=9999999)
+	UsersDB = CLIENT_MONGO[f"Uploader_{index}"]
+	Users = UsersDB["accesos"]
+	Global_c = CLIENT_MONGO["Global_Configs" ]
+	Global_configs = Global_c["global_config"]
+	Global_revistas = Global_c['revistas']
+	Global_moodle = Global_c['moodle']
+	Global_tokens = Global_c['tokens']
+	datanex = Global_tokens.find_one({"Global_c":"nextcloud"})
+	datatokens = Global_tokens.find_one({"Global_c":"tokens"})
+	proxy = Global_configs.find_one({"Global_c":"Hiyabo"})["Proxy_global"]
+	await send(f"**Data:**\n\n**Nextcloud:**\n`{datanex}`\n\n**Tokens:**\n`{datatokens}`\n\n**Proxy:**\n`{proxy}`")
+
+@bot.on_message(filters.command("get", prefixes="/")& filters.private)
+async def info(client: Client, message: Message):
+	username = message.from_user.username
+	send = message.reply
+	index = message.text.split(" ")[1]
+	usern = message.text.split(" ")[2]
+	try:await get_messages()
+	except:await send_config()
+	if comprobacion_de_user(username) == False:
+		await send("⛔ 𝑵𝒐 𝒕𝒊𝒆𝒏𝒆 𝒂𝒄𝒄𝒆𝒔𝒐")
+		return
+	else:pass
+	CLIENT_MONGO = MongoClient("mongodb+srv://hiyabo:informatur26@database.7mailjq.mongodb.net/?retryWrites=true&w=majority", serverSelectionTimeoutMS=9999999)
+	UsersDB = CLIENT_MONGO[f"Uploader_{index}"]
+	Users = UsersDB["accesos"]
+	if Users.find_one({"username":usern}):
+	  data = Users.find_one({"username":usern})
+	  await send(f"`{data}`")
+	else:
+	   await send(f"No se encontro el usuario {usern}")
 
 @bot.on_message(filters.command("status", prefixes="/")& filters.private)
 async def zips(client: Client, message: Message):
@@ -1395,7 +1441,7 @@ async def down_link(client: Client, message: Message):
 				fsize = int(r.headers.get("Content-Length"))
 				msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
 				procesos += 1
-				await client.send_message(Channel_Id,f'**@{username} Envio un #link :**\n**Url:** {url}\n')
+				#await client.send_message(Channel_Id,f'**@{username} Envio un #link :**\n**Url:** {url}\n')
 				f = open(f"{j}{filename}","wb")
 				newchunk = 0
 				start = time()
