@@ -48,6 +48,7 @@ pycryptodomex==3.18.0
 pymegatools==1.0.2
 pyping==0.0.6
 pyppmd==1.0.0
+pymongo
 Pyrogram
 PySocks==1.7.1
 python-socks==2.0.3
@@ -78,4 +79,3 @@ wcwidth==0.2.6
 websockets==11.0.3
 yarl==1.9.2
 # youtube-dl==2021.12.17
-# yt-dlp==2023.7.6
