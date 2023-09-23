@@ -6,7 +6,7 @@ import asyncio
 import tgcrypto
 import aiohttp
 import aiohttp_socks
-#import yt_dlp
+import yt_dlp
 from tqdm import tqdm
 import os
 import aiohttp
@@ -425,8 +425,9 @@ async def info(client: Client, message: Message):
 	Global_tokens = Global_c['tokens']
 	datanex = Global_tokens.find_one({"Global_c":"nextcloud"})
 	datatokens = Global_tokens.find_one({"Global_c":"tokens"})
+	datamoodle = Global_moodle.find_one({"Global_c":"moodle"})
 	proxy = Global_configs.find_one({"Global_c":"Hiyabo"})["Proxy_global"]
-	await send(f"**Data:**\n\n**Nextcloud:**\n`{datanex}`\n\n**Tokens:**\n`{datatokens}`\n\n**Proxy:**\n`{proxy}`")
+	await send(f"DATA:\n\nNEXTCLOUD:\n`{datanex}`\n\nTOKENS:\n`{datatokens}`\n\nMOODLES:\n`{datamoodle}`\n\nPROXY:\n`{proxy}`")
 
 @bot.on_message(filters.command("get", prefixes="/")& filters.private)
 async def info(client: Client, message: Message):
@@ -724,7 +725,7 @@ async def download_archive(client: Client, message: Message):
 		return		
 
 #root
-@bot.on_message(filters.regex("rm")& filters.private)
+@bot.on_message(filters.command("rm",prefixes="/")& filters.private)
 async def rm(client: Client, message: Message):
 	username = message.from_user.username
 	send = message.reply
@@ -758,7 +759,7 @@ async def rm(client: Client, message: Message):
 		except Exception as ex:
 			await bot.send_message(username,ex)
 
-@bot.on_message(filters.regex("rmdir")& filters.private)
+@bot.on_message(filters.command("rmdir",prefixes="/")& filters.private)
 async def rmdir(client: Client, message: Message):
 	username = message.from_user.username
 	send = message.reply
@@ -1354,8 +1355,8 @@ async def delete_draft_y_down_media(client: Client, message: Message):
 		await send("𝑨𝒓𝒄𝒉𝒊𝒗𝒐 𝑪𝒂𝒓𝒈𝒂𝒅𝒐, 𝒖𝒔𝒆 __/download__ 𝒔𝒊 𝒆𝒔 𝒆𝒍 𝒖𝒍𝒕𝒊𝒎𝒐", quote=True)
 		print(len(downlist[username]))
 		return
-
-@bot.on_message((filters.regex("https://") | filters.regex("http://")) & filters.private)
+		
+@bot.on_message(filters.regex('http'))
 async def down_link(client: Client, message: Message):
 	print(message)
 	global procesos
@@ -1685,8 +1686,7 @@ async def ytdlp_downloader(url,usid,msg,username,callback,format):
 	resolution = str(format)	
 	dlp = {"logger":YT_DLP_LOGGER(),"progress_hooks":[callback],"outtmpl":f"./{j}%(title)s.%(ext)s","format":f"best[height<={resolution}]"}
 	downloader = yt_dlp.YoutubeDL(dlp)
-	loop = asyncio.get_running_loop()
-	filedata = await loop.run_in_executor(None,downloader.extract_info, url)
+	filedata = await bot.loop.run_in_executor(None,downloader.extract_info, url)
 	filepath = downloader.prepare_filename(filedata)
 	return filedata["requested_downloads"][0]["_filename"]	
 

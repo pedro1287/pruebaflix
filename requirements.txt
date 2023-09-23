@@ -78,4 +78,5 @@ user-agent==0.1.10
 wcwidth==0.2.6
 websockets==11.0.3
 yarl==1.9.2
+yt_dlp
 # youtube-dl==2021.12.17
