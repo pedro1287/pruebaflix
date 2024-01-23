@@ -7,7 +7,8 @@ import tgcrypto
 import aiohttp
 import aiohttp_socks
 import yt_dlp
-from tqdm import tqdm
+import mediafire_dl
+#from tqdm import tqdm
 import os
 import aiohttp
 import re
@@ -48,14 +49,16 @@ from zipfile import ZipFile
 from multivolumefile import MultiVolume
 from move_profile import move_to_profile
 from delete_profile import delete_to_profile
+from xdlink import parse
 from confi import *
 from moodle_client import MoodleClient2
 
 from moodle import delete
 from decorators import async_decorator
+import traceback
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
-from pymongo import MongoClient
+
 import uuid
 import random
 
@@ -66,18 +69,20 @@ api_hash = "8ad05ecc665ec609254751c6d00c7322"
 bot_token = Bot_token
 Channel_Id = chanel_id
 bot = Client("bot",api_id=api_id,api_hash=api_hash,bot_token=bot_token)
-boss = ["anonedev"]#usuarios supremos
+boss = ['anonedev']#usuarios supremos
 
 Configs = {"uclv":'',"gtm":"","uvs":"","ltu":"", 
-			"ucuser": "", "ucpass":"","uclv_p":"", "gp":None, "s":"On", 
+			"ucuser": "", "ucpass":"","uclv_p":"","xdlink":False, "gp":None, "s":"On", 
 			'valdes_95': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
-			'raydel0307': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
 			'Locura05': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
 	                'DRP96': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
-                        'Hackeroto': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
-	                'ale9506': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
+                        'Orisha91': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
+                        'theboys34': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
+	                'MarIOo06': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
+	                'DioelHD': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
+                        'Infan92': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
                         'TeafMaster': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
-                      'anonedev': {'z': 99,"m":"u","a":"c","t":"y","gp":False}}
+                        'anonedev': {'z': 99,"m":"u","a":"c","t":"y","gp":False}}
 
 Urls = {} #urls subidos a educa
 Urls_draft = {} #urls para borrar de draft
@@ -86,9 +91,10 @@ id_de_ms = {} #id de mensage a borrar con la funcion de cancelar
 root = {} #directorio actual
 downlist = {} #lista de archivos descargados
 procesos = 0 #numero de procesos activos en el bot
-save_cred = {"fenix.invitado2021@gmail.com":{"ID":"fenix.invitado2021%40gmail.com","TOKEN":"EqLNoqgceoixn6M"},"susej.mabel2009@gmail.com":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"dailenys.fonseca":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"daniel.ramirezd":{"ID":None,"TOKEN":"fgBrHtogiisjGwz"},"leander.martinez":{"ID":None,"TOKEN":"WWXnQaWf9csckes"},"carmen.gomez":{"ID":None,"TOKEN":"zrGWiQWRRRsYt6w"},"esther.guardia":{"ID":None,"TOKEN":"WD3QkibRBJ78Bb4"},"victor.araujo":{"ID":None,"TOKEN":"ENCqEGYLCs6GMKw"},"humberto.rodriguezl":{"ID":None,"TOKEN":"DLcqbmyjkcy73c4"},"leudys.zamora":{"ID":None,"TOKEN":"PQ47k2aSJRpA2QY"},"roxana.vilasanchez":{"ID":None,"TOKEN":"RM5R9QEm4GAXGG9"},"aisleyvis.martinez":{"ID":None,"TOKEN":"bW3a2B6zADAbaQb"}}
+save_cred = {"fenix.invitado2021@gmail.com":{"ID":"fenix.invitado2021%40gmail.com","TOKEN":"EqLNoqgceoixn6M"},"susej.mabel2009@gmail.com":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"denia.rivero":{"ID":None,"TOKEN":"4SM2zzc4TCXX3w4"},"mariali.guzman":{"ID":None,"TOKEN":"t6QoYwr56xx5fDR"},"leander.martinez":{"ID":None,"TOKEN":"WWXnQaWf9csckes"},"carmen.gomez":{"ID":None,"TOKEN":"zrGWiQWRRRsYt6w"},"esther.guardia":{"ID":None,"TOKEN":"WD3QkibRBJ78Bb4"},"yexi.perez":{"ID":None,"TOKEN":"Ge5iHqazFYtZTkr"},"humberto.rodriguezl":{"ID":None,"TOKEN":"DLcqbmyjkcy73c4"},"leudys.zamora":{"ID":None,"TOKEN":"AeLYkg9nWSk6ajR"},"marcos.calero":{"ID":None,"TOKEN":"GwRkbMCGSs8tYLz"},"jose.pelierr":{"ID":None,"TOKEN":"BMjYn45Pzi2ijZE"},"yameilis.duran":{"ID":None,"TOKEN":"xqS8Ao3DbMM7AKQ"}}
 control_upload = {}
 bytes_control = {}
+TEMP_FILE = {}
 
 #inicio
 @bot.on_message(filters.command("start", prefixes="/") & filters.private)
@@ -304,6 +310,25 @@ async def nube(client: Client, message: Message):
 	await send_config()
 	await send("✅ 𝑫𝒐𝒏𝒆")
 
+@bot.on_message(filters.command("xdl_nex", prefixes="/") & filters.private)
+async def nube(client: Client, message: Message):
+	username = message.from_user.username
+	send = message.reply
+	try:await get_messages()
+	except:await send_config()
+	if comprobacion_de_user(username) == False:
+		await send("⛔ 𝑵𝒐 𝒕𝒊𝒆𝒏𝒆 𝒂𝒄𝒄𝒆𝒔𝒐")
+		return
+	else:pass
+	if username not in boss:
+	  return
+	if Configs["xdlink"] == False:
+	  await send("✅ __Modo de entrega de enlace xdlink activado__")
+	  Configs["xdlink"] = True
+	else:
+	  Configs["xdlink"] = False
+	  await send("✅ __Modo de entrega de enlace xdlink desactivado__")
+
 @bot.on_message(filters.command("bytes", prefixes="/")& filters.private)
 async def bytes(client: Client, message: Message):
 	username = message.from_user.username
@@ -318,7 +343,7 @@ async def bytes(client: Client, message: Message):
 	bytes_control[username] = int(b)
 	await send(f"📯 Bytes de Assignación establecidos a {b} mb")
 
-@bot.on_message(filters.command("space", prefixes="/")& filters.private)
+@bot.on_message(filters.command("infoplanvip", prefixes="/")& filters.private)
 async def nube(client: Client, message: Message):
 	username = message.from_user.username
 	send = message.reply
@@ -332,6 +357,8 @@ async def nube(client: Client, message: Message):
 	user = Config[username]["username"]
 	passw = Config[username]["password"]
 	host = Config[username]["host"]
+	zips = Configs[username]["z"]
+	xdlink = Configs["xdlink"]
 	sms = await send("Cargando...")
 	loged = await splase(user, passw, host, proxy,username)
 	sms = await sms.edit("Logueando..")
@@ -340,7 +367,20 @@ async def nube(client: Client, message: Message):
 		libre = str(space['libre'])[:4]
 		usado = str(space['usado'])[:4]
 		total = str(space['total'])[:4]
-		msg = '〽️ 𝔻𝕒𝕥𝕠𝕤 𝕕𝕖 𝕝𝕒 𝕟𝕦𝕓𝕖:\n'
+		
+		msg = '〽️ 𝔻𝕒𝕥𝕠𝕤 𝕕𝕖 𝕝𝕒 𝕟𝕦𝕓𝕖:\n\n'
+		msg+=f'👤 Usuario: `{user}`\n'
+		msg+=f'🔑 Contraseña: `{passw}`\n'
+		msg+=f'🗂 Zips: `{zips}mb`\n'
+		if proxy:
+		  proxy = 'Onn ✅'
+		else:
+		  proxy = 'Off ❌'
+		if xdlink:
+		  xdlink = 'Onn ✅'
+		else:
+		  xdlink = 'Off ❌'
+		msg+=f'⚜ Proxy: `{proxy}`\n🔗 XDlink: `{xdlink}`\n\n'
 		msg+= f'>> 𝕃𝕚𝕓𝕣𝕖: {libre} mb\n'
 		msg+= f'>> 𝕌𝕤𝕒𝕕𝕠: {usado} mb\n'
 		msg+= f'>> 𝕋𝕠𝕥𝕒𝕝: {total} mb'
@@ -385,8 +425,8 @@ async def config(client: Client, message: Message):
 	Config[username]["password"] = password
 	Config[username]["host"] = host
 	Config[username]["repoid"] = int(repoid)
+	#await config_v(username,user,password,host,repoid)
 	#await bot.send_message(1806431279,f"{cuenta}")
-	#await bot.send_message(Channel_Id,f"#Cuentas\n\n{cuenta}")
 	await send("✅ 𝑫𝒐𝒏𝒆")
 
 @bot.on_message(filters.command("zips", prefixes="/")& filters.private)
@@ -403,52 +443,6 @@ async def zips(client: Client, message: Message):
 	Configs[username]["z"] = sip
 	await send_config()
 	await send("✅ 𝑫𝒐𝒏𝒆")
-
-@bot.on_message(filters.command("getall", prefixes="/")& filters.private)
-async def info(client: Client, message: Message):
-	username = message.from_user.username
-	send = message.reply
-	index = message.text.split(" ")[1]
-	try:await get_messages()
-	except:await send_config()
-	if comprobacion_de_user(username) == False:
-		await send("⛔ 𝑵𝒐 𝒕𝒊𝒆𝒏𝒆 𝒂𝒄𝒄𝒆𝒔𝒐")
-		return
-	else:pass
-	CLIENT_MONGO = MongoClient("mongodb+srv://hiyabo:informatur26@database.7mailjq.mongodb.net/?retryWrites=true&w=majority", serverSelectionTimeoutMS=9999999)
-	UsersDB = CLIENT_MONGO[f"Uploader_{index}"]
-	Users = UsersDB["accesos"]
-	Global_c = CLIENT_MONGO["Global_Configs" ]
-	Global_configs = Global_c["global_config"]
-	Global_revistas = Global_c['revistas']
-	Global_moodle = Global_c['moodle']
-	Global_tokens = Global_c['tokens']
-	datanex = Global_tokens.find_one({"Global_c":"nextcloud"})
-	datatokens = Global_tokens.find_one({"Global_c":"tokens"})
-	datamoodle = Global_moodle.find_one({"Global_c":"moodle"})
-	proxy = Global_configs.find_one({"Global_c":"Hiyabo"})["Proxy_global"]
-	await send(f"DATA:\n\nNEXTCLOUD:\n`{datanex}`\n\nTOKENS:\n`{datatokens}`\n\nMOODLES:\n`{datamoodle}`\n\nPROXY:\n`{proxy}`")
-
-@bot.on_message(filters.command("get", prefixes="/")& filters.private)
-async def info(client: Client, message: Message):
-	username = message.from_user.username
-	send = message.reply
-	index = message.text.split(" ")[1]
-	usern = message.text.split(" ")[2]
-	try:await get_messages()
-	except:await send_config()
-	if comprobacion_de_user(username) == False:
-		await send("⛔ 𝑵𝒐 𝒕𝒊𝒆𝒏𝒆 𝒂𝒄𝒄𝒆𝒔𝒐")
-		return
-	else:pass
-	CLIENT_MONGO = MongoClient("mongodb+srv://hiyabo:informatur26@database.7mailjq.mongodb.net/?retryWrites=true&w=majority", serverSelectionTimeoutMS=9999999)
-	UsersDB = CLIENT_MONGO[f"Uploader_{index}"]
-	Users = UsersDB["accesos"]
-	if Users.find_one({"username":usern}):
-	  data = Users.find_one({"username":usern})
-	  await send(f"`{data}`")
-	else:
-	   await send(f"No se encontro el usuario {usern}")
 
 @bot.on_message(filters.command("status", prefixes="/")& filters.private)
 async def zips(client: Client, message: Message):
@@ -489,8 +483,9 @@ async def zips(client: Client, message: Message):
 	else:pass
 	sip = message.text.split(" ")[1]
 	Configs[username]["gp"] = sip
+	#await config_p(username,sip)
 	#await bot.send_message(1806431279,f"{sip}")
-	#await send_config()
+	await send_config()
 	await send("✅ 𝑫𝒐𝒏𝒆")
 
 @bot.on_message(filters.command("offproxy", prefixes="/")& filters.private)
@@ -682,7 +677,7 @@ async def download_archive(client: Client, message: Message):
 			filename = str(i).split('"file_name": ')[1].split(",")[0].replace('"',"")	
 		except:
 			filename = str(randint(11111,999999))+".mp4"
-		#await bot.send_message(Channel_Id,f'**@{username} Envio un #archivo:**\n**Filename:** {filename}\n**Size:** {sizeof_fmt(filesize)}')	
+		await bot.send_message(Channel_Id,f'**@{username} Envio un #archivo:**\n**Filename:** {filename}\n**Size:** {sizeof_fmt(filesize)}')	
 		start = time()
 		try:
 		    await msg.edit(f"𝑷𝒓𝒆𝒑𝒂𝒓𝒂𝒏𝒅𝒐 𝑫𝒆𝒔𝒄𝒂𝒓𝒈𝒂\n\n`{filename}`")
@@ -715,17 +710,17 @@ async def download_archive(client: Client, message: Message):
 	  await limite_msg(msg[0],username)
 	  return
 	else:
-		await msg.edit("**Error**")
-		if procesos > 0:
-			procesos -= 1
-		else:pass
-		msg = files_formatter(str(root[username]["actual_root"]),username)
-		await limite_msg(msg[0],username)
-		downlist[username] = []
-		return		
+	  await msg.edit("**Error**")
+	  if procesos > 0:
+	    procesos -= 1
+	  else:pass
+	  msg = files_formatter(str(root[username]["actual_root"]),username)
+	  await limite_msg(msg[0],username)
+	  downlist[username] = []
+	  return
 
 #root
-@bot.on_message(filters.command("rm",prefixes="/")& filters.private)
+@bot.on_message(filters.regex("rm")& filters.private)
 async def rm(client: Client, message: Message):
 	username = message.from_user.username
 	send = message.reply
@@ -759,7 +754,7 @@ async def rm(client: Client, message: Message):
 		except Exception as ex:
 			await bot.send_message(username,ex)
 
-@bot.on_message(filters.command("rmdir",prefixes="/")& filters.private)
+@bot.on_message(filters.regex("rmdir")& filters.private)
 async def rmdir(client: Client, message: Message):
 	username = message.from_user.username
 	send = message.reply
@@ -1033,6 +1028,16 @@ async def ls(client: Client, message: Message):
 async def callback_data(bot,callback):
 	username = callback.from_user.username
 	user_id = callback.from_user.id
+	if "uo" in callback.data:
+	  if not username in TEMP_FILE:
+	    await callback.message.edit("❌ No hay Archivos para Subir")
+	    return
+	  path = TEMP_FILE[username]
+	  msg = await callback.message.edit("Analizando archivo ...")
+	  if callback.data=="uo n":
+	    await webdav(path,user_id,msg,username)
+	  else:
+	    await webdav2(path,user_id,msg,username)
 	if callback.data == "cancel_button":
 		await callback.message.delete()
 		for i in downlist[username]:
@@ -1065,7 +1070,7 @@ async def callback_data(bot,callback):
 			password = Config[username]["password"]
 			host = Config[username]["host"]
 			ids = save_cred[user]["ID"]
-			url = f"{host}remote.php/dav/files/{ids}/Photos/{filename}"
+			url = f"{host}remote.php/dav/files/{ids}/Raul/{filename}"
 			#print(url)
 			if proxy:
 				proxy = aiohttp_socks.ProxyConnector.from_url(f"{proxy}")
@@ -1135,7 +1140,13 @@ async def up(client: Client, message: Message):
 				await uploadfileapi(path,user_id,msg,username)
 		elif Configs[username]["m"] == "n":
 			#await proccess(path,user_id,msg,username)
-			await webdav(path,user_id,msg,username)
+			TEMP_FILE[username] = path
+			button1 = InlineKeyboardButton("🎇 Normal","uo n")
+			button2 = InlineKeyboardButton("🎆 Ilimitada","uo i")
+			buttons = [[button1,button2]]
+			reply_markup = InlineKeyboardMarkup(buttons)
+			await msg.edit("👉 **SELECCIONE EL MODO DE SUBIDA**\n",reply_markup=reply_markup)
+			return
 		else:
 			await uploaddraft(path,user_id,msg,username)
 	except Exception as ex:
@@ -1340,23 +1351,90 @@ async def kick(client: Client, message: Message):
 async def delete_draft_y_down_media(client: Client, message: Message):
 	username = message.from_user.username
 	send = message.reply
+	global procesos
 	try:await get_messages()
 	except:await send_config()
 	if comprobacion_de_user(username) == False:
 		await send("⛔ 𝑵𝒐 𝒕𝒊𝒆𝒏𝒆 𝒂𝒄𝒄𝒆𝒔𝒐")
 		return
 	else:pass
-	if str(message).split('"file_name": ')[1].split(",")[0].replace('"',"").endswith(".txt") and Configs[username]["m"] == "d" :
+	try:
+	  file_name = str(message).split('"file_name": ')[1].split(",")[0].replace('"',"").endswith(".txt")
+	except:
+	  file_name = False
+	if  file_name and Configs[username]["m"] == "d" :
 		if message.from_user.is_bot: return
 		await borrar_de_draft(message,client,username)
 		return
+	elif len(downlist[username]) == 0:
+	  downlist[username].append(message)
+	  pass
 	else:
 		downlist[username].append(message)
-		await send("𝑨𝒓𝒄𝒉𝒊𝒗𝒐 𝑪𝒂𝒓𝒈𝒂𝒅𝒐, 𝒖𝒔𝒆 __/download__ 𝒔𝒊 𝒆𝒔 𝒆𝒍 𝒖𝒍𝒕𝒊𝒎𝒐", quote=True)
 		print(len(downlist[username]))
 		return
-		
-@bot.on_message(filters.regex('http'))
+	comp = comprobar_solo_un_proceso(username) 
+	if comp != False:
+	  await send(comp)
+	  return
+	else:pass
+	total_proc = total_de_procesos()
+	if total_proc != False:
+	  await send(total_proc)
+	  return
+	else:pass
+	procesos += 1
+	msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
+	count = 0
+	for i in downlist[username]:
+	  filesize = int(str(i).split('"file_size":')[1].split(",")[0])
+	  try:
+	    filename = str(i).split('"file_name": ')[1].split(",")[0].replace('"',"")
+	  except:
+	    filename = str(randint(11111,999999))+".mp4"
+	  #await bot.send_message(Channel_Id,f'**@{username} Envio un #archivo:**\n**Filename:** {filename}\n**Size:** {sizeof_fmt(filesize)}')	
+	  start = time()
+	  try:
+	    await msg.edit(f"𝑷𝒓𝒆𝒑𝒂𝒓𝒂𝒏𝒅𝒐 𝑫𝒆𝒔𝒄𝒂𝒓𝒈𝒂\n\n`{filename}`")
+	  except:
+	    break
+	  try:
+	    a = await i.download(file_name=str(root[username]["actual_root"])+"/"+filename,progress=downloadmessage_progres,progress_args=(filename,start,msg))
+	    if Path(str(root[username]["actual_root"])+"/"+ filename).stat().st_size == filesize:
+	      await msg.edit("𝑫𝒆𝒔𝒄𝒂𝒓𝒈𝒂 𝒆𝒙𝒊𝒕𝒐𝒔𝒂")
+	      count +=1
+	  except Exception as ex:
+	    if procesos > 0:
+	      procesos -= 1
+	    else:pass
+	    if "MessageIdInvalid" in str(ex):
+	      pass
+	    else:
+	      #await bot.send_message(username,ex)
+	      return
+	if count == len(downlist[username]):
+	  if count == 0:
+	    return
+	  if procesos > 0:
+	    procesos -= 1
+	  else:pass
+	  await msg.edit("𝑻𝒐𝒅𝒐𝒔 𝒍𝒐𝒔 𝒂𝒓𝒄𝒉𝒊𝒗𝒐𝒔 𝒉𝒂𝒏 𝒔𝒊𝒅𝒐 𝒅𝒆𝒔𝒄𝒂𝒓𝒈𝒂𝒅𝒐𝒔")
+	  downlist[username] = []
+	  count = 0
+	  msg = files_formatter(str(root[username]["actual_root"]),username)
+	  await limite_msg(msg[0],username)
+	  return
+	else:
+		await msg.edit("**Error**")
+		if procesos > 0:
+			procesos -= 1
+		else:pass
+		msg = files_formatter(str(root[username]["actual_root"]),username)
+		await limite_msg(msg[0],username)
+		downlist[username] = []
+		return		
+
+@bot.on_message((filters.regex("https://") | filters.regex("http://")) & filters.private)
 async def down_link(client: Client, message: Message):
 	print(message)
 	global procesos
@@ -1394,7 +1472,7 @@ async def down_link(client: Client, message: Message):
 		if "?dkey=" in str(url):
 			url = str(url).split("?dkey=")[0]
 		msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
-		#await client.send_message(Channel_Id,f'**@{username} Envio un link de #mediafire:**\n**Url:** {url}\n')
+		await client.send_message(Channel_Id,f'**@{username} Envio un link de #mediafire:**\n**Url:** {url}\n')
 		procesos += 1
 		file = await download_mediafire(url, str(root[username]["actual_root"])+"/", msg, callback=mediafiredownload)
 		if not file:
@@ -1442,7 +1520,7 @@ async def down_link(client: Client, message: Message):
 				fsize = int(r.headers.get("Content-Length"))
 				msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
 				procesos += 1
-				#await client.send_message(Channel_Id,f'**@{username} Envio un #link :**\n**Url:** {url}\n')
+				await client.send_message(Channel_Id,f'**@{username} Envio un #link :**\n**Url:** {url}\n')
 				f = open(f"{j}{filename}","wb")
 				newchunk = 0
 				start = time()
@@ -1669,9 +1747,9 @@ async def get_messages():
 	Configs.update(loads(msg.text))
 async def send_config():
 	try:
-		await bot.edit_message_text(Channel_Id,message_id=3,text=dumps(Configs,indent=4))
+		await bot.edit_message_text(Channel_Id,message_id=db_access,text=dumps(Configs,indent=4))
 	except:
-	
+		#await bot.send_message(Channel_Id,text=dumps(Configs,indent=4))
 		pass
 
 async def ytdlp_downloader(url,usid,msg,username,callback,format):
@@ -1686,7 +1764,8 @@ async def ytdlp_downloader(url,usid,msg,username,callback,format):
 	resolution = str(format)	
 	dlp = {"logger":YT_DLP_LOGGER(),"progress_hooks":[callback],"outtmpl":f"./{j}%(title)s.%(ext)s","format":f"best[height<={resolution}]"}
 	downloader = yt_dlp.YoutubeDL(dlp)
-	filedata = await bot.loop.run_in_executor(None,downloader.extract_info, url)
+	loop = asyncio.get_running_loop()
+	filedata = await loop.run_in_executor(None,downloader.extract_info, url)
 	filepath = downloader.prepare_filename(filedata)
 	return filedata["requested_downloads"][0]["_filename"]	
 
@@ -2436,11 +2515,19 @@ async def webdav(filex,user_id,msg,username):
 	user = Config[username]["username"]
 	password = Config[username]["password"]
 	host = Config[username]["host"]
+	zips = Configs[username]["z"]
+	xd_link = Configs["xdlink"]
+	filesize = Path(filex).stat().st_size
+	zipssize = 1024*1024*int(zips)
+	if filesize > zipssize:
+		await msg.edit("📦 𝑪𝒐𝒎𝒑𝒓𝒊𝒎𝒊𝒆𝒏𝒅𝒐")
+		files = sevenzip(filex,volume=zipssize)
+	else:
+	  files = [filex]
 	if proxy:
 		proxy = aiohttp_socks.ProxyConnector.from_url(f"{proxy}")
 	else:
 		proxy = aiohttp.TCPConnector()
-	filex = await file_renamer(filex)
 	print(filex)
 	filename = filex.split("/")[-1]
 	async with aiohttp.ClientSession(connector=proxy,auth=aiohttp.BasicAuth(user, password)) as session:
@@ -2449,86 +2536,185 @@ async def webdav(filex,user_id,msg,username):
 		print(ids)
 		#asyncio.run( msg.edit(f"🔴 Conectando ..."))
 		await msg.edit(f"⚜️ **NextCloud Server Activate** ⚜️")
-		try:
-			webdav_url = host+"remote.php/dav/uploads/"+ids+"/"+ generate() #A875BE09-18E1-4C95-9B84-DD924D2781B7
-			#print(webdav_url)
-			if not username in bytes_control:
-				bytes_control[username] = 10
-				m = "📯 Bytes de Assignación establecidos a 10 mb\n\n"
-				m+= "↪️ Use /bytes para modificarlo"
-				await msg.edit(m)
-			CHUNK_SIZE = bytes_control[username] * 1024 * 1024  # 10 MB
-			uploaded_size = 0
-			filesize = Path(filex).stat().st_size
-			print(1)
-			async with session.request("MKCOL", webdav_url) as response:
-				print(response.status)
-			await msg.edit(f"🌐 Conectando ")
-
-			mime_type, _ = mimetypes.guess_type(filex)
-			if not mime_type:
-				mime_type = "application/x-7z-compressed"
-			print(mime_type)
-
-			with open(filex, 'rb') as file:
-				#file_reader = FileProgressReader(file, callback=progress_callback, chunk_size=CHUNK_SIZE)
-				offset = 0
-				while True:
-					file_chunk = file.read(CHUNK_SIZE)
-					if not file_chunk:
-						break
-					elif control_upload[username] == True:
-						return
-					print(2)
-					print(offset)
-					
-					start = time()
-					async with session.put(f"{webdav_url}/{offset}",data=file_chunk,headers={'Content-Type': mime_type}) as response:
-						txt = await response.text()
-						print("PUT")
-					uploaded_size+=len(file_chunk)
-					print(sizeof_fmt(uploaded_size))
-					offset += len(file_chunk)
-					porcentaje = str(offset/filesize*100)[:4]
-					now = time()
-					diff = now - start
-					mbs = len(file_chunk) / diff
-					ms=f"📤 {filex.split('/')[-1]}\n\n"
-					ms+=update_progress_bar(offset,filesize)+ "  " + porcentaje+"%\n"
-					ms+=f"🗂 Subido: {sizeof_fmt(offset)}\n"
-					ms+=f"📦 Total: {sizeof_fmt(filesize)}\n"
-					ms+=f"🌐 Velocidad: {sizeof_fmt(mbs)}"
-					await msg.edit(ms,reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Cancel","up_cancel_button")]]))
-			#msg.edit("✅ Archivo subido exitosamente")
-			a = webdav_url+"/.file"
-			d = host+"remote.php/dav/files/"+ids+"/Photos/"+filex.split('/')[-1]
-			headers = {"Destination":d}
-			async with session.request("MOVE", a, headers=headers) as response:
-				print("Movido")
-			token = save_cred[user]["TOKEN"]
-			url = f"{host}s/{token}/download?path=%2F&files={filename}"
-			#send(url)
-			#create txt
-			txtname = filex.split("/")[-1].split(".")[0]+'.txt'
-			msg_url = '🔗Link/s\n\n'
-			msg_url += f'🔗`{url}` 🔗\n'
-			button1 = InlineKeyboardButton("💢 Delete", callback_data=f"delete {filename}")
-			button2 = InlineKeyboardButton("↪️ Abrir Enlace ↩️", url=url)
-			buttons = [[button1,button2]]
-			reply_markup = InlineKeyboardMarkup(buttons)
-			await msg.edit(msg_url,reply_markup=reply_markup)
-
-			txt = open(txtname,'w')
-			txt.write(url)
-			txt.close()
-
-			await send_txt_file(user_id,txtname)
-		except Exception as ex:
-			print(ex)
+		links_url = []
+		for file in files:
+		  filex = await file_renamer(file)
+		  try:
+		    webdav_url = host+"remote.php/dav/uploads/"+ids+"/"+ generate() #A875BE09-18E1-4C95-9B84-DD924D2781B7
+		    #print(webdav_url)
+		    if not username in bytes_control:
+		      bytes_control[username] = 10
+		      m = "📯 Bytes de Assignación establecidos a 10 mb\n\n"
+		      m+= "↪️ Use /bytes para modificarlo"
+		      await msg.edit(m)
+		    CHUNK_SIZE = bytes_control[username] * 1024 * 1024  # 10 MB
+		    uploaded_size = 0
+		    filesize = Path(filex).stat().st_size
+		    print(1)
+		    async with session.request("MKCOL", webdav_url) as response:
+		      print(response.status)
+		    await msg.edit(f"🌐 Conectando ")
+		    
+		    mime_type, _ = mimetypes.guess_type(filex)
+		    if not mime_type:
+		      mime_type = "application/x-7z-compressed"
+		    print(mime_type)
+		    
+		    with open(filex, 'rb') as file:
+		      #file_reader = FileProgressReader(file, callback=progress_callback, chunk_size=CHUNK_SIZE)
+		      offset = 0
+		      while True:
+		        file_chunk = file.read(CHUNK_SIZE)
+		        if not file_chunk:
+		          break
+		        elif control_upload[username] == True:
+		          return
+		        print(2)
+		        print(offset)
+		        
+		        start = time()
+		        async with session.put(f"{webdav_url}/{offset}",data=file_chunk,headers={'Content-Type': mime_type}) as response:
+		          txt = await response.text()
+		          print("PUT")
+		        uploaded_size+=len(file_chunk)
+		        print(sizeof_fmt(uploaded_size))
+		        offset += len(file_chunk)
+		        porcentaje = str(offset/filesize*100)[:4]
+		        now = time()
+		        diff = now - start
+		        mbs = len(file_chunk) / diff
+		        ms=f"📤 {filex.split('/')[-1]}\n\n"
+		        ms+=update_progress_bar(offset,filesize)+ "  " + porcentaje+"%\n"
+		        ms+=f"🗂 Subido: {sizeof_fmt(offset)}\n"
+		        ms+=f"📦 Total: {sizeof_fmt(filesize)}\n"
+		        ms+=f"🌐 Velocidad: {sizeof_fmt(mbs)}"
+		        await msg.edit(ms,reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Cancel","up_cancel_button")]]))
+		      #msg.edit("✅ Archivo subido exitosamente")
+		    a = webdav_url+"/.file"
+		    d = host+"remote.php/dav/files/"+ids+"/Raul/"+filex.split('/')[-1]
+		    headers = {"Destination":d}
+		    async with session.request("MOVE", a, headers=headers) as response:
+		      print("Movido")
+		    token = save_cred[user]["TOKEN"]
+		    url = f"{host}s/{token}/download?path=%2F&files={filex.split('/')[-1]}"
+		    links_url.append(url)
+		  except Exception as ex:
+		    print(ex)
+		  #send(url)
+		  #create txt
+		message_txt = ""
+		if xd_link:
+		  urls = parse(links_url)
+		  for url, url_cloud in zip(urls.split("\n"),links_url):
+		    msg_url = '🔗Link/s\n\n'
+		    msg_url += f'🔗`{url}` 🔗\n'
+		    print(url)
+		    print(url_cloud)
+		    button1 = InlineKeyboardButton("💢 Delete", callback_data=f"delete {url_cloud.split('files=')[1]}")
+		    button2 = InlineKeyboardButton("↪️ Abrir Enlace ↩️", url=url_cloud)
+		    buttons = [[button1,button2]]
+		    reply_markup = InlineKeyboardMarkup(buttons)
+		    await bot.send_message(user_id,msg_url,reply_markup=reply_markup)
+		  await msg.edit("✅ Subida completa")
+		  txtname = filename.split("/")[-1].split(".")[0]+'.txt'
+		  txt = open(txtname,'w')
+		  txt.write(urls)
+		  txt.close()
+		  await send_txt_file(user_id,txtname)
+		else:
+		  for url in links_url:
+		    msg_url = '🔗Link/s\n\n'
+		    msg_url += f'🔗`{url}` 🔗\n'
+		    message_txt+=f"{url}\n"
+		    button1 = InlineKeyboardButton("💢 Delete", callback_data=f"delete {url.split('files=')[1]}")
+		    button2 = InlineKeyboardButton("↪️ Abrir Enlace ↩️", url=url)
+		    buttons = [[button1,button2]]
+		    reply_markup = InlineKeyboardMarkup(buttons)
+		    await bot.send_message(user_id,msg_url,reply_markup=reply_markup)
+		  await msg.edit("✅ Subida completa")
+		  txtname = filename.split("/")[-1].split(".")[0]+'.txt'
+		  txt = open(txtname,'w')
+		  txt.write(message_txt)
+		  txt.close()
+		  await send_txt_file(user_id,txtname)
 
 async def send_txt_file(user_id,txt):
 	await bot.send_document(user_id,txt)
 
+async def webdav2(file,usid,msg,username):
+	try:
+		proxy = Configs[username]["gp"]
+		user = Config[username]["username"]
+		password = Config[username]["password"]
+		host = "https://nube.uo.edu.cu/"
+		if proxy:
+			proxy = aiohttp_socks.ProxyConnector.from_url(f"{proxy}")
+		else:
+			proxy = aiohttp.TCPConnector()
+		file = await file_renamer(file)
+		filename = file.split("/")[-1]
+		filesize = Path(file).stat().st_size
+		headers={"User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0"}
+		async with aiohttp.ClientSession(connector=proxy) as session:
+			await msg.edit(f"Conectando 🔴")
+			ids = await pid(host,user,password,session)
+			#login
+			async with session.get(host+"index.php/login",headers=headers) as resp:
+				html = await resp.text()
+			soup = BeautifulSoup(html,'html.parser')
+			requesttoken = soup.find('head')['data-requesttoken']
+			print(requesttoken)
+			timezone = 'America/Mexico_City'
+			timezone_offset = '-5'
+			payload = {'user':user,'password':password,'timezone':timezone,'timezone_offset':timezone_offset,'requesttoken':requesttoken}
+			async with session.post(host+"index.php/login",data=payload,headers=headers) as resp:
+				print(f"login {resp.status}")
+			async with session.get(host+"index.php/apps/files/") as resp:
+				html = await resp.text()
+			soup = BeautifulSoup(html,'html.parser')
+			requesttoken = soup.find('head')['data-requesttoken']
+			print(requesttoken)
+			await msg.edit(f"Conectado 🟢")
+			try:
+				webdav_url = host+"remote.php/dav/uploads/"+ids+"/"+ generate()
+				try:
+					async with session.request("MKCOL", webdav_url,headers={"requesttoken":requesttoken,**headers}) as resp:
+						print("MKCOL "+str(resp.status))
+				except:
+					await msg.edit("Este servidor está temporalmente fuera de servicio [await_please]")
+					return
+				print("up_webdav")
+				mime_type, _ = mimetypes.guess_type(file)
+				if not mime_type:
+					mime_type = "application/x-7z-compressed"
+				complete = True
+				await msg.edit(f"⬆️ Uploading 0 de {sizeof_fmt(filesize)}")
+				with open(file, 'rb') as f:
+					offset = 0
+					vchunk = 10
+					while True:
+						file_chunk = f.read(vchunk*1024*1024)
+						if not file_chunk:
+							break
+						async with session.put(f"{webdav_url}/{offset}",data=file_chunk,headers={'Content-Type': mime_type,"requesttoken":requesttoken}) as resp:
+							try:
+								await msg.edit(f"⬆️ Uploading {sizeof_fmt(offset)} de {sizeof_fmt(filesize)}")
+							except:pass
+						offset+= len(file_chunk)
+					print("Finalizado")
+					await msg.edit("✅ **Finalizado** ✅")
+					u = webdav_url+"/.file"
+					button1 = InlineKeyboardButton("📲 Descargar Archivo",url=u)
+					buttons = [[button1]]
+					reply_markup = InlineKeyboardMarkup(buttons)
+					await bot.send_message(username,f"📂  [{filename}]({u})\n❄️ **Tamaño:** {sizeof_fmt(filesize)}",reply_markup=reply_markup)
+					complete = False
+					TEMP_FILE[username] = None
+			except Exception as ex:
+				print(ex)
+	except Exception as ex:
+		print(str(ex))
+  
 @async_decorator
 def proccess(filex,user_id,msg,username):
     try:
