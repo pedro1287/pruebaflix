@@ -49,7 +49,6 @@ from zipfile import ZipFile
 from multivolumefile import MultiVolume
 from move_profile import move_to_profile
 from delete_profile import delete_to_profile
-from xdlink import parse
 from confi import *
 from moodle_client import MoodleClient2
 
