@@ -676,7 +676,6 @@ async def download_archive(client: Client, message: Message):
 			filename = str(i).split('"file_name": ')[1].split(",")[0].replace('"',"")	
 		except:
 			filename = str(randint(11111,999999))+".mp4"
-		await bot.send_message(Channel_Id,f'**@{username} Envio un #archivo:**\n**Filename:** {filename}\n**Size:** {sizeof_fmt(filesize)}')	
 		start = time()
 		try:
 		    await msg.edit(f"𝑷𝒓𝒆𝒑𝒂𝒓𝒂𝒏𝒅𝒐 𝑫𝒆𝒔𝒄𝒂𝒓𝒈𝒂\n\n`{filename}`")
@@ -1391,7 +1390,6 @@ async def delete_draft_y_down_media(client: Client, message: Message):
 	    filename = str(i).split('"file_name": ')[1].split(",")[0].replace('"',"")
 	  except:
 	    filename = str(randint(11111,999999))+".mp4"
-	  #await bot.send_message(Channel_Id,f'**@{username} Envio un #archivo:**\n**Filename:** {filename}\n**Size:** {sizeof_fmt(filesize)}')	
 	  start = time()
 	  try:
 	    await msg.edit(f"𝑷𝒓𝒆𝒑𝒂𝒓𝒂𝒏𝒅𝒐 𝑫𝒆𝒔𝒄𝒂𝒓𝒈𝒂\n\n`{filename}`")
@@ -1455,7 +1453,6 @@ async def down_link(client: Client, message: Message):
 		try:format = str(list[1])
 		except:format = "720"
 		msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
-		#await client.send_message(Channel_Id,f'**@{username} Envio un link de #youtube:**\n**Url:** {url}\n**Formato:** {str(format)}p')
 		procesos += 1
 		download = await ytdlp_downloader(url,user_id,msg,username,lambda data: download_progres(data,msg,format),format)
 		if procesos != 0:
@@ -1471,7 +1468,6 @@ async def down_link(client: Client, message: Message):
 		if "?dkey=" in str(url):
 			url = str(url).split("?dkey=")[0]
 		msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
-		await client.send_message(Channel_Id,f'**@{username} Envio un link de #mediafire:**\n**Url:** {url}\n')
 		procesos += 1
 		file = await download_mediafire(url, str(root[username]["actual_root"])+"/", msg, callback=mediafiredownload)
 		if not file:
@@ -1519,7 +1515,6 @@ async def down_link(client: Client, message: Message):
 				fsize = int(r.headers.get("Content-Length"))
 				msg = await send("𝑹𝒆𝒄𝒐𝒑𝒊𝒍𝒂𝒏𝒅𝒐 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊ó𝒏")
 				procesos += 1
-				await client.send_message(Channel_Id,f'**@{username} Envio un #link :**\n**Url:** {url}\n')
 				f = open(f"{j}{filename}","wb")
 				newchunk = 0
 				start = time()
@@ -2024,8 +2019,7 @@ async def uploaddraft(file,usid,msg,username):
 		if username in boss:
 			pass
 		else:
-			await bot.send_message(Channel_Id,f"✅ 𝑭𝒊𝒏𝒂𝒍𝒊𝒛𝒂𝒅𝒐 𝒆𝒙𝒊𝒕𝒐𝒔𝒂𝒎𝒆𝒏𝒕𝒆\n\n𝑵𝒐𝒎𝒃𝒓𝒆: {filename}\n🖇{message}")
-			await bot.send_document(Channel_Id,filename+".txt")
+		  pass
 		id_de_ms[username]["proc"] = ""
 		os.unlink(filename+".txt")
 		return
@@ -2040,8 +2034,7 @@ async def uploaddraft(file,usid,msg,username):
 			if username in boss:
 				pass
 			else:
-				await bot.send_message(Channel_Id,f"✅ 𝑭𝒊𝒏𝒂𝒍𝒊𝒛𝒂𝒅𝒐 𝒆𝒙𝒊𝒕𝒐𝒔𝒂𝒎𝒆𝒏𝒕𝒆\n\n𝑵𝒐𝒎𝒃𝒓𝒆: {filename}\n🖇{upload}")
-				await bot.send_document(Channel_Id,filename+".txt")
+			  pass
 			id_de_ms[username]["proc"] = ""
 			os.unlink(filename+".txt")
 			return
@@ -2211,8 +2204,7 @@ async def uploadfile(file,usid,msg,username):
 					f.write(message)		
 				await bot.send_document(usid,filename+".txt",caption="Gracias por usar nuestros sevicios\nPara continuar subiendo use **/ls** :)")
 				if mode != "a":
-					await bot.send_message(Channel_Id,f"✅ 𝑭𝒊𝒏𝒂𝒍𝒊𝒛𝒂𝒅𝒐 𝒆𝒙𝒊𝒕𝒐𝒔𝒂𝒎𝒆𝒏𝒕𝒆\n\n𝑵𝒐𝒎𝒃𝒓𝒆: {filename}\n🖇{message}")
-					await bot.send_document(Channel_Id,filename+".txt")
+					pass
 				else:pass
 				id_de_ms[username]["proc"] = ""
 				os.unlink(filename+".txt")
@@ -2288,8 +2280,7 @@ async def uploadfile(file,usid,msg,username):
 					f.write(message)				
 				await bot.send_document(usid,filename+".txt",caption="Gracias por usar nuestros sevicios\nPara continuar subiendo use **/ls** :)")
 				if mode != "a":
-					await bot.send_message(Channel_Id,f"✅ 𝑭𝒊𝒏𝒂𝒍𝒊𝒛𝒂𝒅𝒐 𝒆𝒙𝒊𝒕𝒐𝒔𝒂𝒎𝒆𝒏𝒕𝒆\n\n𝑵𝒐𝒎𝒃𝒓𝒆: {filename}\n🖇{lin}")
-					await bot.send_document(Channel_Id,filename+".txt")
+					pass
 				else:pass
 				id_de_ms[username]["proc"] = ""
 				os.unlink(filename+".txt")
@@ -2369,8 +2360,6 @@ async def uploadfileapi(file,usid,msg,username):
 							lin+=li+"\n"
 						t.write(message)
 				await bot.send_document(usid,filename_god+".txt",caption="Gracias por usar nuestros sevicios\nPara continuar subiendo use **/ls** :)")
-				await bot.send_message(Channel_Id,f"✅ 𝑭𝒊𝒏𝒂𝒍𝒊𝒛𝒂𝒅𝒐 𝒆𝒙𝒊𝒕𝒐𝒔𝒂𝒎𝒆𝒏𝒕𝒆\n\n𝑵𝒐𝒎𝒃𝒓𝒆: {filename}\n🖇{lin}")
-				await bot.send_document(Channel_Id,filename_god+".txt")
 				os.unlink(filename_god+".txt")
 				id_de_ms[username]["proc"] = ""
 				return
@@ -2410,9 +2399,6 @@ async def uploadfileapi(file,usid,msg,username):
 									lin+=li+"\n"
 								t.write(message)
 						await bot.send_document(usid,filename_god+".txt",caption="Gracias por usar nuestros sevicios\nPara continuar subiendo use **/ls** :)")
-						await bot.send_message(Channel_Id,f"✅ 𝑭𝒊𝒏𝒂𝒍𝒊𝒛𝒂𝒅𝒐 𝒆𝒙𝒊𝒕𝒐𝒔𝒂𝒎𝒆𝒏𝒕𝒆\n\n𝑵𝒐𝒎𝒃𝒓𝒆: {filename}\n🖇{lin}")
-						#await bot.send_message(Channel_Id,f"🖍 Nombre: {filename}\n📦 Tamaño: {sizeof_fmt(filesize)}\n🖇 Enlaces:\n{lin}")
-						await bot.send_document(Channel_Id,filename_god+".txt")
 						os.unlink(filename_god+".txt")
 						id_de_ms[username]["proc"] = ""
 						return
