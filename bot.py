@@ -1,6 +1,3 @@
-from time import sleep
-sleep(1200)
-
 import shutil
 import asyncio
 import tgcrypto
