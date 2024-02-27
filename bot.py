@@ -60,12 +60,12 @@ import random
 
 import io
 
-api_id = 29188695
-api_hash = "8ad05ecc665ec609254751c6d00c7322"
+api_id = 10181262
+api_hash = "f52b5a057b73b9974eaa7403e04907f0"
 bot_token = Bot_token
 Channel_Id = chanel_id
 bot = Client("bot",api_id=api_id,api_hash=api_hash,bot_token=bot_token)
-boss = ['anonedev']#usuarios supremos
+boss = ['JAGB2021']#usuarios supremos
 
 Configs = {"uclv":'',"gtm":"","uvs":"","ltu":"", 
 			"ucuser": "", "ucpass":"","uclv_p":"","xdlink":False, "gp":None, "s":"On", 
@@ -78,7 +78,7 @@ Configs = {"uclv":'',"gtm":"","uvs":"","ltu":"",
 	                'DioelHD': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
                         'Infan92': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
                         'TeafMaster': {'z': 99,"m":"u","a":"c","t":"y","gp":False},
-                        'anonedev': {'z': 99,"m":"u","a":"c","t":"y","gp":False}}
+                        'JAGB2021': {'z': 99,"m":"u","a":"c","t":"y","gp":False}}
 
 Urls = {} #urls subidos a educa
 Urls_draft = {} #urls para borrar de draft
@@ -87,7 +87,7 @@ id_de_ms = {} #id de mensage a borrar con la funcion de cancelar
 root = {} #directorio actual
 downlist = {} #lista de archivos descargados
 procesos = 0 #numero de procesos activos en el bot
-save_cred = {"fenix.invitado2021@gmail.com":{"ID":"fenix.invitado2021%40gmail.com","TOKEN":"EqLNoqgceoixn6M"},"susej.mabel2009@gmail.com":{"ID":None,"TOKEN":"64y9HKakm9swzXg"},"denia.rivero":{"ID":None,"TOKEN":"4SM2zzc4TCXX3w4"},"mariali.guzman":{"ID":None,"TOKEN":"t6QoYwr56xx5fDR"},"leander.martinez":{"ID":None,"TOKEN":"WWXnQaWf9csckes"},"carmen.gomez":{"ID":None,"TOKEN":"zrGWiQWRRRsYt6w"},"esther.guardia":{"ID":None,"TOKEN":"WD3QkibRBJ78Bb4"},"yexi.perez":{"ID":None,"TOKEN":"Ge5iHqazFYtZTkr"},"humberto.rodriguezl":{"ID":None,"TOKEN":"DLcqbmyjkcy73c4"},"leudys.zamora":{"ID":None,"TOKEN":"AeLYkg9nWSk6ajR"},"marcos.calero":{"ID":None,"TOKEN":"GwRkbMCGSs8tYLz"},"jose.pelierr":{"ID":None,"TOKEN":"BMjYn45Pzi2ijZE"},"yameilis.duran":{"ID":None,"TOKEN":"xqS8Ao3DbMM7AKQ"}}
+save_cred = {"":{"}}
 control_upload = {}
 bytes_control = {}
 TEMP_FILE = {}
