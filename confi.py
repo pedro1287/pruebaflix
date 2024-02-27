@@ -1,2 +1,2 @@
-Bot_token = "6525129559:AAE_J_vDmVTs_gfwsOWUL-8qP71XOB09RUg"
-chanel_id = -1001830188013
+Bot_token = "5887442268:AAG-lcurssR91PbCoh-8-oY7coveUdIz8po"
+chanel_id = -4006913440
